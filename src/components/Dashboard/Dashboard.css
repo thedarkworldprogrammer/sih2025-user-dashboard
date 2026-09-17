@@ -287,15 +287,19 @@
 .profile-dropdown-menu {
   position: absolute;
   bottom: 60px; /* Position above the footer */
-  right: 150px;
+  /* left: 5px; */
   background-color: white;
   border: 1px solid #ccc;
   border-radius: 8px;
   box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-  width: 150px;
-  z-index: 1001; /* Ensure it's above other elements */
+  max-width: min-content;
+  z-index: 1001;
 }
-
+/* @media (max-width: 800px) {
+  .profile-dropdown-menu {
+    left: 1px;
+  }
+} */
 .dropdown-item {
   padding: 10px 15px;
   cursor: pointer;

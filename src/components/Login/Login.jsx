@@ -9,6 +9,7 @@ import { auth } from '../../firebase'
 import { Link, useNavigate } from 'react-router-dom'
 import './Login.css'
 import { AiOutlineEye, AiOutlineEyeInvisible } from 'react-icons/ai'
+import HeroImg from '../../assets/hero.png'
 
 const Login = () => {
   const [email, setEmail] = useState('')

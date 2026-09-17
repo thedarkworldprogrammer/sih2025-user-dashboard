@@ -1,0 +1,23 @@
+.bmc {
+  text-align: center;
+  font-size: 45px;
+  text-shadow: 2px 2px 5px #000;
+  margin-bottom: 20px;
+}
+.content {
+  max-width: 800px;
+  background: rgba(255, 255, 255, 0.2);
+  padding: 30px;
+  border-radius: 20px;
+  margin: auto;
+  backdrop-filter: blur(10px);
+}
+h2 {
+  margin-top: 20px;
+  font-size: 28px;
+}
+p,
+li {
+  font-size: 20px;
+  line-height: 1.6;
+}

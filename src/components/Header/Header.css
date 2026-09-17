@@ -12,17 +12,17 @@
   width: 25px;
   height: 100%;
 }
-.project-title-bar h1 {
+.project-title-bar #head-logo {
   flex: 1;
   font-size: 1.5rem;
   margin: 0;
   font-weight: 900;
-  background: linear-gradient(20deg, #04f514, #013bfc);
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
+  background: linear-gradient(20deg, #04f514, #013bfc) !important;
+  -webkit-background-clip: text !important;
+  -webkit-text-fill-color: transparent !important;
 }
 @media (min-width: 768px) {
-  .project-title-bar h1 {
+  .project-title-bar #head-logo {
     font-size: 2rem;
   }
   .project-title-bar img {

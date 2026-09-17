@@ -13,7 +13,11 @@ import Signup from './components/Signup/Signup'
 import Profile from './components/Profile/Profile'
 // import ResetPassword from './components/ResetPassword/ResetPassword'
 import './App.css'
+import Helpline from './components/Helpline/Helpline'
+import Traffic from './components/Traffic/Traffic'
+import BMC from './components/BMC/BMC'
 // import { DotLottieReact } from '@lottiefiles/dotlottie-react'
+import AllComplaints from './components/AllComplaints/AllComplaints'
 
 const App = () => {
   const [isAuthenticated, setIsAuthenticated] = useState(false)
@@ -46,6 +50,16 @@ const App = () => {
               isAuthenticated ? <Dashboard /> : <Navigate to="/login" replace />
             }
           />
+          <Route
+            path="/complaints"
+            element={
+              isAuthenticated ? (
+                <AllComplaints />
+              ) : (
+                <Navigate to="/login" replace />
+              )
+            }
+          />
           <Route path="/login" element={<Login />} />
           <Route path="/signup" element={<Signup />} />
           {/* <Route path="/reset-password" element={<ResetPassword />} /> */}
@@ -55,6 +69,9 @@ const App = () => {
               isAuthenticated ? <Profile /> : <Navigate to="/login" replace />
             }
           />
+          <Route path="/helpline" element={<Helpline />} />
+          <Route path="/traffic" element={<Traffic />} />
+          <Route path="/bmc" element={<BMC />} />
         </Routes>
       </div>
     </Router>

@@ -3,21 +3,24 @@
   justify-content: center;
   align-items: center;
   height: 100vh;
-  background-color: #f0f2f5;
+  background-image: url('../../assets/l1.jpg');
+  background-size: cover;
 }
 
 .auth-form {
-  background-color: white;
+  backdrop-filter: blur(10px);
   padding: 40px;
   border-radius: 8px;
   box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
   width: 350px;
   text-align: center;
+  background-color: transparent !important;
 }
 
 .auth-form h2 {
-  margin-bottom: 20px;
-  color: #333;
+  margin-bottom: 40px !important;
+  color: #fafafa !important;
+  font-size: 2rem;
 }
 
 .auth-form input {
@@ -48,6 +51,7 @@
 .auth-form p {
   margin-top: 20px;
   font-size: 14px;
+  color: rgba(255, 255, 255, 0.603);
 }
 
 .auth-form a {

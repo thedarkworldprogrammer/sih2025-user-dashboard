@@ -1,0 +1,258 @@
+.all-complaints-page {
+  min-height: 100vh;
+  background: #f0f2f5;
+  font-family: Arial, sans-serif;
+  padding-bottom: 30px;
+}
+
+/* Header */
+
+.all-complaints-header {
+  height: 64px;
+  background: #007bff;
+  color: white;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  position: relative;
+}
+
+.all-complaints-header h2 {
+  margin: 0;
+  font-size: 1.4rem;
+}
+
+.complaints-back-button {
+  position: absolute;
+  left: 18px;
+  background: transparent;
+  border: none;
+  color: white;
+  font-size: 2rem;
+  cursor: pointer;
+}
+
+/* Content */
+
+.complaints-content {
+  width: 100%;
+  max-width: 900px;
+  margin: 0 auto;
+  padding: 20px;
+  box-sizing: border-box;
+}
+
+/* Count */
+
+.complaints-count {
+  background: white;
+  padding: 15px;
+  border-radius: 10px;
+  margin-bottom: 15px;
+  font-size: 1rem;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+}
+
+/* Complaint list */
+
+.complaints-list {
+  display: flex;
+  flex-direction: column;
+  gap: 18px;
+}
+
+/* Card */
+
+.complaint-card {
+  background: white;
+  border-radius: 12px;
+  overflow: hidden;
+  box-shadow: 0 3px 12px rgba(0, 0, 0, 0.1);
+}
+
+/* Image */
+
+.complaint-image {
+  width: 100%;
+  height: 220px;
+  object-fit: cover;
+  display: block;
+}
+
+.complaint-no-image {
+  height: 180px;
+  background: #e9ecef;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  font-size: 2.5rem;
+  color: #777;
+}
+
+.complaint-no-image span {
+  font-size: 0.9rem;
+  margin-top: 5px;
+}
+
+/* Details */
+
+.complaint-details {
+  padding: 18px;
+}
+
+.complaint-top-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 10px;
+}
+
+.complaint-id {
+  color: #777;
+  font-size: 0.85rem;
+  font-weight: bold;
+}
+
+.complaint-details h3 {
+  margin: 10px 0 8px;
+  font-size: 1.2rem;
+  color: #222;
+}
+
+.complaint-description {
+  margin: 0 0 15px;
+  color: #555;
+  line-height: 1.5;
+}
+
+/* Status */
+
+.complaint-status {
+  padding: 5px 10px;
+  border-radius: 20px;
+  font-size: 0.75rem;
+  font-weight: bold;
+  text-transform: capitalize;
+}
+
+.complaint-status.pending {
+  background: #fff3cd;
+  color: #856404;
+}
+
+.complaint-status.resolved {
+  background: #d4edda;
+  color: #155724;
+}
+
+.complaint-status.in-progress {
+  background: #cce5ff;
+  color: #004085;
+}
+
+/* Info */
+
+.complaint-info {
+  border-top: 1px solid #eee;
+  padding-top: 12px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  color: #555;
+  font-size: 0.9rem;
+}
+
+.complaint-info div {
+  display: flex;
+  align-items: center;
+  gap: 7px;
+}
+
+/* Loading */
+
+.complaints-loading {
+  min-height: 300px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+}
+
+.loading-spinner-circle {
+  width: 40px;
+  height: 40px;
+  border: 4px solid #ddd;
+  border-top: 4px solid #007bff;
+  border-radius: 50%;
+  animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+/* Error */
+
+.complaints-error {
+  background: white;
+  padding: 30px;
+  border-radius: 12px;
+  text-align: center;
+}
+
+.complaints-error p {
+  color: #dc3545;
+}
+
+.complaints-error button {
+  background: #007bff;
+  color: white;
+  border: none;
+  padding: 10px 20px;
+  border-radius: 6px;
+  cursor: pointer;
+}
+
+/* Empty */
+
+.no-complaints {
+  background: white;
+  padding: 50px 20px;
+  border-radius: 12px;
+  text-align: center;
+}
+
+.no-complaints-icon {
+  font-size: 3rem;
+}
+
+.no-complaints h3 {
+  margin-bottom: 5px;
+}
+
+/* Desktop */
+
+@media (min-width: 768px) {
+  .complaint-card {
+    display: flex;
+  }
+
+  .complaint-image {
+    width: 280px;
+    height: 240px;
+    flex-shrink: 0;
+  }
+
+  .complaint-no-image {
+    width: 280px;
+    height: 240px;
+    flex-shrink: 0;
+  }
+
+  .complaint-details {
+    flex: 1;
+  }
+}

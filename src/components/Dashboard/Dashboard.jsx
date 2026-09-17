@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useRef } from 'react'
 import { onAuthStateChanged, signOut } from 'firebase/auth'
 import { auth } from '../../firebase'
-import { supabase } from '../../supabaseClient'
+// import { supabase } from '../../supabaseClient'
 import './Dashboard.css'
 import Header from '../Header/Header'
 import ComplaintSection from '../ComplaintSection/ComplaintSection'
@@ -11,7 +11,7 @@ import { IoNotifications } from 'react-icons/io5'
 import { IoIosAddCircle } from 'react-icons/io'
 import { FaUserCircle } from 'react-icons/fa'
 import { PiDotsThreeCircleDuotone } from 'react-icons/pi'
-import HeroImg from '../../assets/hero.jpeg'
+import HeroImg from '../../assets/hero.png'
 
 import { MdOutlineSecurity } from 'react-icons/md'
 import { IoCallOutline } from 'react-icons/io5'
@@ -20,6 +20,9 @@ import { FaBusAlt } from 'react-icons/fa'
 import { FaTrafficLight } from 'react-icons/fa'
 import { FaLocationDot } from 'react-icons/fa6'
 import { FaRegQuestionCircle } from 'react-icons/fa'
+import Footer from '../Footer/Footer'
+
+import { API_BASE_URL } from '../../config'
 
 const Dashboard = () => {
   const [user, setUser] = useState(null)
@@ -134,8 +137,10 @@ const Dashboard = () => {
     setCapturedLocation(null)
   }
 
+
   const handleFormSubmit = async (e) => {
     e.preventDefault()
+
     if (!capturedImage) {
       alert('Please capture an image before submitting.')
       return
@@ -146,64 +151,173 @@ const Dashboard = () => {
       return
     }
 
+    if (!capturedLocation) {
+      alert('Location is required. Please capture the image again.')
+      return
+    }
+
     setIsSubmitting(true)
 
     try {
+      // Convert captured Base64 image into Blob
       const dataURLtoBlob = (dataurl) => {
         const arr = dataurl.split(',')
         const mime = arr[0].match(/:(.*?);/)[1]
         const bstr = atob(arr[1])
+
         let n = bstr.length
         const u8arr = new Uint8Array(n)
+
         while (n--) {
           u8arr[n] = bstr.charCodeAt(n)
         }
+
         return new Blob([u8arr], { type: mime })
       }
 
-      const imageFile = dataURLtoBlob(capturedImage)
-      const filePath = `complaints/${user.uid}/${Date.now()}.jpeg`
-      const { error: uploadError } = await supabase.storage
-        .from('complaint-images')
-        .upload(filePath, imageFile, {
-          cacheControl: '3600',
-          upsert: false,
-        })
+      const imageBlob = dataURLtoBlob(capturedImage)
 
-      if (uploadError) throw uploadError
+      // Create FormData for Django API
+      const formData = new FormData()
 
-      const { data: imageUrlData } = supabase.storage
-        .from('complaint-images')
-        .getPublicUrl(filePath)
+      formData.append('title', complaintTitle)
+      formData.append('description', complaintDescription)
 
-      const imageUrl = imageUrlData.publicUrl
+      formData.append(
+        'latitude',
+        String(capturedLocation.latitude)
+      )
 
-      const { error: insertError } = await supabase.from('complaints').insert({
-        title: complaintTitle,
-        description: complaintDescription,
-        image_url: imageUrl,
-        user_id: user.uid,
-        latitude: capturedLocation?.latitude || null,
-        longitude: capturedLocation?.longitude || null,
-        created_at: new Date().toISOString(),
-        status: 'pending',
-      })
+      formData.append(
+        'longitude',
+        String(capturedLocation.longitude)
+      )
 
-      if (insertError) throw insertError
+      // IMPORTANT:
+      // Backend expects the image field as "file"
+      formData.append(
+        'file',
+        imageBlob,
+        `complaint-${Date.now()}.jpg`
+      )
 
-      alert('Complaint submitted successfully!')
+      // Send complaint to Django backend
+      const response = await fetch(
+        `${API_BASE_URL}/api/complaints/create/`,
+        {
+          method: 'POST',
+          body: formData,
+        }
+      )
 
+      const result = await response.json()
+
+      if (!response.ok) {
+        throw new Error(
+          result.error || 'Failed to submit complaint'
+        )
+      }
+
+      console.log('Complaint created:', result)
+
+      alert(
+        `Complaint submitted successfully!\n\n` +
+        `Complaint ID: ${result.complaint_id}\n` +
+        `AI Category: ${result.predicted_class}\n` +
+        `Confidence: ${(result.confidence * 100).toFixed(2)}%`
+      )
+
+      // Reset form
       setCapturedImage(null)
       setCapturedLocation(null)
       setComplaintTitle('Broken streetlight')
+      setComplaintDescription('')
       setIsFormVisible(false)
     } catch (error) {
       console.error('Error submitting complaint:', error)
-      alert('Failed to submit complaint. ' + error.message)
+
+      alert(
+        `Complaint submission failed.\n\n${error.message}`
+      )
     } finally {
       setIsSubmitting(false)
     }
   }
+
+  // const handleFormSubmit = async (e) => {
+  //   e.preventDefault()
+  //   if (!capturedImage) {
+  //     alert('Please capture an image before submitting.')
+  //     return
+  //   }
+
+  //   if (!user) {
+  //     alert('You must be logged in to submit a complaint.')
+  //     return
+  //   }
+
+  //   setIsSubmitting(true)
+
+  //   try {
+  //     const dataURLtoBlob = (dataurl) => {
+  //       const arr = dataurl.split(',')
+  //       const mime = arr[0].match(/:(.*?);/)[1]
+  //       const bstr = atob(arr[1])
+  //       let n = bstr.length
+  //       const u8arr = new Uint8Array(n)
+  //       while (n--) {
+  //         u8arr[n] = bstr.charCodeAt(n)
+  //       }
+  //       return new Blob([u8arr], { type: mime })
+  //     }
+
+  //     const imageFile = dataURLtoBlob(capturedImage)
+  //     const filePath = `complaints/${user.uid}/${Date.now()}.jpeg`
+  //     const { error: uploadError } = await supabase.storage
+  //       .from('complaint-images')
+  //       .upload(filePath, imageFile, {
+  //         cacheControl: '3600',
+  //         upsert: false,
+  //       })
+
+  //     if (uploadError) throw uploadError
+
+  //     const { data: imageUrlData } = supabase.storage
+  //       .from('complaint-images')
+  //       .getPublicUrl(filePath)
+
+  //     const imageUrl = imageUrlData.publicUrl
+
+  //     const { error: insertError } = await supabase.from('complaints').insert({
+  //       title: complaintTitle,
+  //       description: complaintDescription,
+  //       image_url: imageUrl,
+  //       user_id: user.uid,
+  //       latitude: capturedLocation?.latitude || null,
+  //       longitude: capturedLocation?.longitude || null,
+  //       created_at: new Date().toISOString(),
+  //       status: 'pending',
+  //     })
+
+  //     if (insertError) throw insertError
+
+  //     alert('Complaint Error when Inserting! ',insertError)
+
+  //     setCapturedImage(null)
+  //     setCapturedLocation(null)
+  //     setComplaintTitle('Broken streetlight')
+  //     setIsFormVisible(false)
+  //   } catch (error) {
+  //     console.error('Error submitting complaint:', error)
+  //     alert('Complaint Error when Submitting! ', error)
+  //     setCapturedImage(null)
+  //     setCapturedLocation(null)
+  //     setComplaintTitle('Broken streetlight')
+  //     setIsFormVisible(false)
+  //   } finally {
+  //     setIsSubmitting(false)
+  //   }
+  // }
 
   const userName = user ? user.displayName || user.email.split('@')[0] : 'Guest'
   const showFooter =
@@ -215,10 +329,10 @@ const Dashboard = () => {
         <img src={HeroImg} alt="BMP" />
       </div>
       <div className="button-grid">
-        <div className="grid-button">
+        <div className="grid-button" onClick={() => navigate('/bmc')}>
           <MdOutlineSecurity /> <span>BMC</span>
         </div>
-        <div className="grid-button">
+        <div className="grid-button" onClick={() => navigate('/helpline')}>
           <IoCallOutline />
           <span>Helpline</span>
         </div>
@@ -226,19 +340,28 @@ const Dashboard = () => {
           <FaExclamationCircle />
           <span className="button-label">Complaint</span>
         </div>
-        <div className="grid-button">
+        <div
+          className="grid-button"
+          onClick={() => alert('Navigating to B Bus section')}
+        >
           <FaBusAlt />
           <span>B Bus</span>
         </div>
-        <div className="grid-button">
+        <div className="grid-button" onClick={() => navigate('/traffic')}>
           <FaTrafficLight />
           <span>Traffic</span>
         </div>
-        <div className="grid-button">
+        <div
+          className="grid-button"
+          onClick={() => alert('Navigating to Nearby facilities section')}
+        >
           <FaLocationDot />
           <span>Nearby facilities</span>
         </div>
-        <div className="grid-button">
+        <div
+          className="grid-button"
+          onClick={() => alert('Navigating to FAQ section')}
+        >
           <FaRegQuestionCircle />
           <span>FAQ</span>
         </div>
@@ -261,7 +384,7 @@ const Dashboard = () => {
         </div>
         <div
           className="menu-item"
-          onClick={() => alert('Viewing all complaints...')}
+          onClick={() => navigate('/complaints')}
         >
           <span className="item-icon">📜</span>
           <span className="item-text">View all complaint</span>
@@ -398,14 +521,17 @@ const Dashboard = () => {
           </div>
           <div
             className="footer-item profile-dropdown-container"
-            onClick={() => setShowProfileMenu(!showProfileMenu)}
+            onClick={() => {
+              setShowProfileMenu(!showProfileMenu)
+              navigate('/profile')
+            }}
           >
             {/* <i className="fas fa-user-circle"></i> */}
             <span className="userIcon">
               <FaUserCircle />
             </span>
             {/* <span>{user?.displayName || 'Profile'}</span> */}
-            {showProfileMenu && (
+            {/* {showProfileMenu && (
               <div className="profile-dropdown-menu">
                 <div
                   className="dropdown-item"
@@ -413,20 +539,28 @@ const Dashboard = () => {
                 >
                   View Profile
                 </div>
+              </div>
+            )} */}
+          </div>
+          <div
+            className="footer-item"
+            onClick={() => setShowProfileMenu(!showProfileMenu)}
+          >
+            <i className="fas fa-bars"></i>
+            <span className="userIcon">
+              <PiDotsThreeCircleDuotone />
+            </span>
+            {showProfileMenu && (
+              <div className="profile-dropdown-menu">
                 <div className="dropdown-item" onClick={handleLogout}>
                   Logout
                 </div>
               </div>
             )}
           </div>
-          <div className="footer-item">
-            <i className="fas fa-bars"></i>
-            <span className="userIcon">
-              <PiDotsThreeCircleDuotone />
-            </span>
-          </div>
         </div>
       )}
+      {/* <Footer /> */}
     </div>
   )
 }
